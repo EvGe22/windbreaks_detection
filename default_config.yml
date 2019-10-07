@@ -1,0 +1,5 @@
+data:
+  train:
+    data_path: "./data/train"
+  valid:
+    data_path: "./data/valid"
