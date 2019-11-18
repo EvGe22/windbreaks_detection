@@ -1,5 +1,5 @@
 data:
   train:
-    data_path: "./data/train"
+    data_csv_path: "/home/evge/Tasks/Geo-DIplom/data/train_paths.csv"
   valid:
-    data_path: "./data/valid"
+    data_csv_path: "/home/evge/Tasks/Geo-DIplom/data/test_paths.csv"

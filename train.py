@@ -35,8 +35,8 @@ def get_loaders(train_config: Dict[str, Union[Dict, str]], valid_config) -> "Ord
     valid_dataset = WindbreakDataset(**valid_config)
 
     return OrderedDict({
-        "train": DataLoader(train_dataset),
-        "valid": DataLoader(valid_dataset)
+        "train": DataLoader(train_dataset, batch_size=1),
+        "valid": DataLoader(valid_dataset, batch_size=1)
     })
 
 
