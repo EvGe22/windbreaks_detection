@@ -21,8 +21,8 @@ class WindbreakDataset(Dataset):
         self.mask_files = mask_files
 
     def __getitem__(self, i):
-        im = image_array = imageio.imread(self.data_files[i])   # nrg -> grn
-        mask = imageio.imread(self.mask_files[i]) / 255
+        im = np.array(imageio.imread(self.data_files[i]))   # nrg -> grn
+        mask = np.array(imageio.imread(self.mask_files[i])) / 255
 
         return to_tensor(im), np.expand_dims(mask.astype('float32'), axis=0)
 

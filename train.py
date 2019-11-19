@@ -30,13 +30,13 @@ def parse_args():
     return parser.parse_args()
 
 
-def get_loaders(train_config: Dict[str, Union[Dict, str]], valid_config) -> "OrderedDict[str, DataLoader]":
+def get_loaders(train_config: Dict[str, Union[Dict, str]], valid_config, batch_size) -> "OrderedDict[str, DataLoader]":
     train_dataset = WindbreakDataset(**train_config)
     valid_dataset = WindbreakDataset(**valid_config)
 
     return OrderedDict({
-        "train": DataLoader(train_dataset, batch_size=1),
-        "valid": DataLoader(valid_dataset, batch_size=1)
+        "train": DataLoader(train_dataset, batch_size=batch_size),
+        "valid": DataLoader(valid_dataset, batch_size=batch_size)
     })
 
 
@@ -109,7 +109,9 @@ if __name__ == '__main__':
 
     loaders = get_loaders(
         train_config=safitty.get(config, 'data', 'train'),
-        valid_config=safitty.get(config, 'data', 'valid'))
+        valid_config=safitty.get(config, 'data', 'valid'),
+        batch_size=safitty.get(config, 'data', 'batch_size', default=16)
+    )
 
     runner.train(
         model=model,

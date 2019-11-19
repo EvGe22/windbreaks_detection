@@ -3,3 +3,9 @@ data:
     data_csv_path: "/home/evge/Tasks/Geo-DIplom/data/train_paths.csv"
   valid:
     data_csv_path: "/home/evge/Tasks/Geo-DIplom/data/test_paths.csv"
+  batch_size: 16
+
+model:
+  name: 'unet'
+  params:
+    encoder_name: 'resnext50_32x4d'
