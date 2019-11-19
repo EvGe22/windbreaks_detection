@@ -1,10 +1,7 @@
-import os
-
+import imageio
 from torch.utils.data import DataLoader, Dataset
-import cv2
 import numpy as np
 import pandas as pd
-from glob import glob
 
 
 def to_tensor(x):
@@ -24,8 +21,8 @@ class WindbreakDataset(Dataset):
         self.mask_files = mask_files
 
     def __getitem__(self, i):
-        im = cv2.imread(self.data_files[i])   # nrg -> grn
-        mask = cv2.imread(self.mask_files[i], 0) / 255
+        im = image_array = imageio.imread(self.data_files[i])   # nrg -> grn
+        mask = imageio.imread(self.mask_files[i]) / 255
 
         return to_tensor(im), np.expand_dims(mask.astype('float32'), axis=0)
 
