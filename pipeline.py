@@ -40,27 +40,34 @@ if __name__ == '__main__':
     markup = gp.read_file(args.vegetation_path)
     polys = markup.loc[:, 'geometry']
     all_image_path_dfs = []
+    failures = []
 
     for satellite_dir in glob(join(args.data_folder, '*')):
-        tile_folder, img_folder = get_tile_img_folder_path(satellite_dir)
-        save_folder = join(args.output_folder, tile_folder)
-        os.makedirs(save_folder, exist_ok=True)
-        tiff_path = join(save_folder, f'{tile_folder}.tif')
-        create_tif(img_folder, tiff_path)
+        if not os.path.isdir(satellite_dir):
+            continue
+        try:
+            tile_folder, img_folder = get_tile_img_folder_path(satellite_dir)
+            save_folder = join(args.output_folder, tile_folder)
+            os.makedirs(save_folder, exist_ok=True)
+            tiff_path = join(save_folder, f'{tile_folder}.tif')
+            create_tif(img_folder, tiff_path)
 
-        tiles_path = join(save_folder, f'{tile_folder}_tiles')
-        pieces_path = join(save_folder, f'{tile_folder}_pieces.csv')
-        divide_into_pieces(image_path=tiff_path, save_path=tiles_path,
-                           pieces_file=pieces_path, width=512, height=512)
+            tiles_path = join(save_folder, f'{tile_folder}_tiles')
+            pieces_path = join(save_folder, f'{tile_folder}_pieces.csv')
+            divide_into_pieces(image_path=tiff_path, save_path=tiles_path,
+                               pieces_file=pieces_path, width=512, height=512)
 
-        mask_path = poly2mask(polys, tiff_path, save_folder)
-        mask_tiles_path = join(save_folder, f'{tile_folder}_mask_tiles')
-        split_mask(mask_path, mask_tiles_path, pieces_path)
+            mask_path = poly2mask(polys, tiff_path, save_folder)
+            mask_tiles_path = join(save_folder, f'{tile_folder}_mask_tiles')
+            split_mask(mask_path, mask_tiles_path, pieces_path)
 
-        tile_paths, mask_paths = get_data_mask_paths(tiles_path, mask_tiles_path)
-        all_image_path_dfs.append(pd.DataFrame({
-            'tile_paths': tile_paths,
-            'mask_paths': mask_paths
-        }))
+            tile_paths, mask_paths = get_data_mask_paths(tiles_path, mask_tiles_path)
+            all_image_path_dfs.append(pd.DataFrame({
+                'tile_paths': tile_paths,
+                'mask_paths': mask_paths
+            }))
+        except FileNotFoundError as e:
+            failures.append(str(e))
 
     pd.concat(all_image_path_dfs).to_csv(join(args.output_folder, 'result_files.csv'), index=False)
+    print(failures)

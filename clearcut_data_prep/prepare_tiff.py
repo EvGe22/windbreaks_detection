@@ -16,8 +16,8 @@ def search_band(band, folder, file_type):
 
 def to_tiff(img_file, output_type='Float32'):
     os.system(
-        f'gdal_translate -ot {output_type} \
-        {img_file} {splitext(img_file)[0]}.tif'
+        f'gdal_translate -ot "{output_type}" \
+        "{img_file}" "{splitext(img_file)[0]}.tif"'
     )
 
 
@@ -33,14 +33,14 @@ def scale_img(img_file, min_value=0, max_value=255, output_type='Byte'):
         os.system(
             f'gdal_translate -ot {output_type} \
             -scale {min_} {max_} {min_value} {max_value} \
-            {img_file} {os.path.splitext(img_file)[0]}_scaled.tif'
+            "{img_file}" "{os.path.splitext(img_file)[0]}_scaled.tif"'
         )
 
 
 def get_ndvi(b4_file, b8_file, ndvi_file):
     os.system(
-        f'gdal_calc.py -A {b4_file} -B {b8_file} \
-        --outfile={ndvi_file} \
+        f'gdal_calc.py -A "{b4_file}" -B "{b8_file}" \
+        --outfile="{ndvi_file}" \
         --calc="(B-A)/(A+B+0.001)" --type=Float32'
     )
 
@@ -62,6 +62,10 @@ def get_tile_img_folder_path(base_path):
     granule_folder = join(base_path, 'GRANULE')
     tile_folder = list(os.walk(granule_folder))[0][1][-1]
     img_folder = join(granule_folder, tile_folder, 'IMG_DATA', 'R10m')
+    if not os.path.exists(img_folder):
+        img_folder = join(granule_folder, tile_folder, 'IMG_DATA')
+    if not os.path.exists(img_folder):
+        raise FileNotFoundError(f'Unknown folder structure for: {base_path}')
     return tile_folder, img_folder
 
 
@@ -81,8 +85,8 @@ def create_tif(img_folder_path, save_path):
     scale_img(f'{b8_name}.jp2')
 
     os.system(
-        f'gdal_merge.py -separate -o {save_path} \
-        {rgb_name}.tif {ndvi_name}_scaled.tif'
+        f'gdal_merge.py -separate -o "{save_path}" \
+        "{rgb_name}.tif" "{ndvi_name}_scaled.tif"'
     )
 
     for item in os.listdir(img_folder_path):
